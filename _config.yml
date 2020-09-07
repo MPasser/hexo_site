@@ -100,6 +100,13 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: next
 
+# hexo-excerpt config
+excerpt:
+  depth: 3
+  excerpt_excludes: []
+  more_excludes: []
+  hideWholePostExcerpts: true
+
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
