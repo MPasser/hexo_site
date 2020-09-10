@@ -2,8 +2,7 @@
 title: Hexo项目搭建
 date: 2020/09/10
 categories: Web
-tags: 
-[Hexo,Git]
+tags: [Hexo,Git]
 ---
 
 ## 前言
