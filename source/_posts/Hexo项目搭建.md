@@ -8,7 +8,7 @@ tags: [Hexo,Git]
 ## 前言
 
 本文将记录我在搭建Hexo项目时的一个大体步骤以及遇到的一些问题，总结一下，哪天若是需要重新弄一遍我也好有个参考。
-由于能力所限并不会涉及的知识不会很深，甚至会有些错误，可不能全信。
+由于能力有限涉及的知识不会很深，甚至会有些错误，可不能全信。
 
 
 
@@ -41,7 +41,7 @@ yum install git.x86_64
 我也不求什么最新版本，同样直接使用了yum安装。
 
 ~~~shell
-yum install git.x86_64
+yum install nginx.x86_64
 ~~~
 
 #### 配置
@@ -137,7 +137,7 @@ git clone https://github.com/nvm-sh/nvm
 
 NPM（Node Package Management）是随同NodeJS一起安装的包管理工具，能解决NodeJS代码部署上的很多问题，常见的使用场景有以下几种：
 
-- 允许用户从NPM服务器下载别人编写的第三方包到本地使用，Hexo就是这样一个第三方包。
+- 允许用户从NPM服务器下载别人编写的第三方包到本地使用，hexo就是这样一个第三方包。
 - 允许用户从NPM服务器下载并安装别人编写的命令行程序到本地使用。
 - 允许用户将自己编写的包或命令行程序上传到NPM服务器供别人使用。
 
@@ -226,7 +226,7 @@ npm install hexo-excerpt --save
 
 ~~~yaml
 excerpt:
-# 这个depth与截取的字数成正相关，但也不是正比，具体如何对应的也不清楚，只能取整数。
+# 这个depth与截取的字数成正相关，但也不是正比，具体如何对应的也不清楚，且只能取整数。
 depth: 10
 excerpt_excludes: []
 more_excludes: []
@@ -255,7 +255,7 @@ while read oldrev newrev ref; do
 		# git的hooks里面默认有一些环境变量,会导致无论在哪个语句之后执行git命令都会有一个默认的环境路径，既然这样unset 掉默认的GIT环境变量就可以了。
 		unset GIT_DIR #这条命令很重要
 		cd $DEPLOY_PATH
-		# 将git客户端重置以下，以防工作区或暂存区存在未保存的内容，导致后续操作失败
+		# 将git客户端重置一下，以防工作区或暂存区存在未保存的内容，导致后续操作失败
 		git reset --hard
 		# 将git服务端的内容同步到git客户端
 		git pull origin master
@@ -264,10 +264,8 @@ while read oldrev newrev ref; do
 		[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 		[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 		nvm use stable # 设置使用的nvm版本
-		# 更新hexo项目中使用的一些插件，没用上的话可以省略，cnpm是淘宝镜像版的npm
-		cnpm install hexo-deployer-git --save
-		cnpm install hexo-filter-mermaid-diagrams --save
-		cnpm install hexo-generator-searchdb --save
+		# 更新hexo项目中使用的一些插件，没用上的话可以省略，cnpm是淘宝镜像版的npm，速度会快一些
+		cnpm install hexo-excerpt --save
 		# 生成静态页面
 		hexo generate
 	else
@@ -276,16 +274,18 @@ while read oldrev newrev ref; do
 done
 ~~~
 
+可以将这些命令的输出重定向至文件中，如果同步失败可以方便地查找原因。
+
 #### 权限问题
 
-如果整个过程全部都使用`root`用户进行操作的话，我也没试，但估计不会有啥问题。
+如果整个过程全部都使用`root`用户进行操作的话，估计不会有啥问题，但我也没试。
 
-但这里我创建了一个git用户，并将git客户端与服务端的属主全设置为git，即`chown -R git:git [dir]` ，全程使用`git`用户进行操作。
+这里我创建了一个git用户，并将git客户端与服务端的属主全设置为git，即`chown -R git:git [dir]` ，全程使用`git`用户进行操作。
 
 并使用`ssh-keygen -t rsa` 创建一个用户签名，将这个签名公匙`id_rsa.pub`的内容放到`/home/git/.ssh/`文件夹下的`authorized_keys`文件中。此文件相当于白名单，对于文件中的所有签名，签名所属用户进行ssh连接的时候能够免密登录（在此若不这样做，脚本中进行git相关操作的时候仍会要求输入用户名与密码，这样相关操作就没办法完成了）。
 
-之后在`/etc/passwd`设置用户git登录脚本为git-shell，妄图保证一点点安全。
+最后在`/etc/passwd`设置用户git登录脚本为git-shell，妄图保证一点点安全。
 
 ### 在markdown格式的博文中引用图片
 
-最简单的一个办法：资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似\!\[](./images/image.jpg) 的方法访问它们。
+最简单的一个办法：资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似\!\[](./images/image.jpg) 的方法访问它们。
