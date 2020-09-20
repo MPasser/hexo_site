@@ -1,8 +1,8 @@
 ---
-title: markdown语法学习
+title: Markdown语法学习
 date: 2019/04/01
 categories: 其他
-tags: markdown
+tags: Markdown
 ---
 # 关于标题
 <pre>
